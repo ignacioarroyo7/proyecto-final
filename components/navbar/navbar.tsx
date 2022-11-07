@@ -24,6 +24,10 @@ const Links = [
     name: "Validar Documento",
     path: "../apps/validar-documento",
     },
+    {
+      name: "Generar Documento",
+      path: "../apps/generar-documento",
+      },
 ];
 
 const NavLink = ({ children, path }: { children: ReactNode, path:string }) => (
