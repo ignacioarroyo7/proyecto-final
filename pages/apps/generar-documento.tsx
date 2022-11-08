@@ -29,6 +29,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 import axios from "axios";
+import FormData from 'form-data';
 
 interface IPDF{
   pdfToBase64: string
@@ -65,19 +66,36 @@ const GenerarDocumento: React.FC = () => {
     return error;
   }
 
+  const convertToBuffer = async (file) => {
+    // Convert file to buffer so that it can be uploaded to IPFS
+    const buffer = await Buffer.from(file);
+    console.log("Buffer: ",buffer)
+    return buffer
+  };
+  
+
+
   const getDocumento = async (constancia) => {
     switch (constancia) {
       case 1:
         const responseGet = await axios.get(
           "http://localhost:5000/api/document/constancia"
+          , { responseType: 'blob' }
         );
-        const body = {
-          fileName: "prueba.pdf",
-          fileContent: responseGet.data,
-        };
-        //const body = responseGet
+        // const body = {
+        //   fileName: "prueba.pdf",
+        //   fileContent: await convertToBuffer(responseGet.data),
+        // };
+        const pdfData = responseGet.data;
+        const form = new FormData();
+        form.append('pdf',pdfData , {
+        filepath: "prueba.pdf",
+        contentType: 'multipart/form-data',
+        });
         const responsePost = await axios.post(
-          "https://7543-2803-9800-9441-4c22-89ab-2aa2-b545-1b29.sa.ngrok.io/api/documentos/validar",body
+          "http://localhost:4000/api/documentos/validar"
+          ,form
+          ,{headers: {'Content-Type': 'multipart/form-data'}}
         );
         // const responsePost = await axios.post(
         //   "https://7543-2803-9800-9441-4c22-89ab-2aa2-b545-1b29.sa.ngrok.io/api/documentos/validar",
