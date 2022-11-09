@@ -43,7 +43,7 @@ const ValidarDocumento: React.FC = () => {
   const getDocumentFromBlockchain = async (hash)=>{
    const responseGet = await axios.get('http://localhost:4000/api/documentos/get',{params:{cid:hash}})
    if(responseGet.status === 200){
-    router.push({pathname:'/apps/ver-documento',query:{IPFS:responseGet.data.urlIPFS,hash:document[0].hash,fechaHora:document[0].fechaHora,emailAlumno:document[0].emailAlumno}})
+    router.push({pathname:'/apps/ver-documento',query:{IPFS:responseGet.data.urlIPFS,hash:responseGet.data.document[0].hash,fechaHora:responseGet.data.document[0].fechaHora,emailAlumno:responseGet.data.document[0].emailAlumno}})
   }else{
     Swal.fire({
       icon: 'error',

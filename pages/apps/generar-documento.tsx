@@ -86,7 +86,7 @@ const GenerarDocumento: React.FC = () => {
       case 1:
         try{
         const responseGet = await axios.get(
-          "http://localhost:7001/api/document/constancia"
+          "http://localhost:5000/api/document/constancia"
           , { responseType: 'blob' }
         );
         // const body = {
