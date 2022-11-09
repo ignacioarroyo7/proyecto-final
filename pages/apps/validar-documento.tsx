@@ -24,7 +24,10 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 
+
 const ValidarDocumento: React.FC = () => {
+  
+
   function validateHash(value) {
     let error;
     if (!value) {
@@ -88,6 +91,10 @@ const ValidarDocumento: React.FC = () => {
                         </FormControl>
                       )}
                     </Field>
+                    <Stack 
+                      direction={{ base: "column", sm: "row" }}
+                        align={"center"}
+                        justify={"center"}>
                     <Button
                       mt={4}
                       bg={"blue.400"}
@@ -101,6 +108,7 @@ const ValidarDocumento: React.FC = () => {
                     >
                       Buscar
                     </Button>
+                    </Stack>
                   </Form>
                 </Stack>
               </Box>

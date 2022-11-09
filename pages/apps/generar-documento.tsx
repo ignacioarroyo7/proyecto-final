@@ -27,16 +27,11 @@ import {
   NumberInputStepper,
   FormErrorMessage,
   Container,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import axios from "axios";
 import FormData from 'form-data';
 import Swal from "sweetalert2";
+import useSessionStorage from "../../components/hooks/useSessionStorage";
 
 interface IPDF{
   pdfToBase64: string
@@ -46,6 +41,7 @@ interface IPDF{
 // const cancelRef = React.useRef()
 
 const GenerarDocumento: React.FC = () => {
+  const sessionEmail = useSessionStorage('email')
   function validateLegajo(value) {
     let error;
     if (!value) {
@@ -90,7 +86,7 @@ const GenerarDocumento: React.FC = () => {
       case 1:
         try{
         const responseGet = await axios.get(
-          "http://localhost:7000/api/document/constancia"
+          "http://localhost:7001/api/document/constancia"
           , { responseType: 'blob' }
         );
         // const body = {
@@ -106,6 +102,7 @@ const GenerarDocumento: React.FC = () => {
           });
           form.append('legajo',legajo)
           form.append('constancia',constancias[constancia-1])
+          form.append('emailAlumno',sessionEmail)
           const responsePost = await axios.post(
             "http://localhost:4000/api/documentos/validar"
             ,form
@@ -123,14 +120,24 @@ const GenerarDocumento: React.FC = () => {
             Swal.fire({
               icon: 'error',
               title: '¡Lo sentimos!',
-              text: 'Ocurrió un error, por favor intente nuevamente',
+              text: 'Ocurrió un error validando en la blockchain, por favor intente nuevamente',
             })
           }
         }catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: '¡Lo sentimos!',
+            text: 'Ocurrió un error validando en la blockchain, por favor intente nuevamente',
+          })
           console.log("error al generar documento");
       }
       }catch (error) {
         console.log("error al generar documento get");
+        Swal.fire({
+          icon: 'error',
+          title: '¡Lo sentimos!',
+          text: 'Ocurrió un error generando el documento, por favor intente nuevamente',
+        })
     }
   
         break;

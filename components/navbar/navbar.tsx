@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 import {
   Box,
   Flex,
@@ -14,23 +14,18 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
-} from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons';
-import Link from 'next/link';
-import { ColorModeSwitcher } from './ColorModeSwitch';
+  Center,
+} from "@chakra-ui/react";
+import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import Link from "next/link";
+import { ColorModeSwitcher } from "./ColorModeSwitch";
+import useSessionStorage from "../hooks/useSessionStorage";
+import { Router, useRouter } from "next/router";
 
-const Links = [
-    {
-    name: "Validar Documento",
-    path: "../apps/validar-documento",
-    },
-    {
-      name: "Generar Documento",
-      path: "../apps/generar-documento",
-      },
-];
 
-const NavLink = ({ children, path }: { children: ReactNode, path:string }) => (
+
+
+const NavLink = ({ children, path }: { children: ReactNode; path: string }) => (
   <Link
     // px={2}
     // py={1}
@@ -39,37 +34,67 @@ const NavLink = ({ children, path }: { children: ReactNode, path:string }) => (
     //   textDecoration: 'none',
     //   bg: useColorModeValue('gray.200', 'gray.700'),
     // }}
-    href={path}>
+    href={path}
+  >
     {children}
   </Link>
 );
 
 export default function Navbar() {
+  const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const sessionEmail = useSessionStorage('email')
+
+  const Links = [
+    {
+      name: "Validar Documento",
+      path: "../apps/validar-documento",
+    },
+    {
+      name: "Generar Documento",
+      path: "../apps/generar-documento",
+      disabled:sessionEmail!=undefined?false:true
+    },
+  ];
+  const iniciarSesion = (email: String)=>{
+    sessionStorage.setItem('email',email.toString())
+  }
+
+  const logout = ()=>{
+    sessionStorage.clear()
+    router.push('../auth/login')
+  }
 
   return (
     <>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
-            size={'md'}
+            size={"md"}
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-            aria-label={'Open Menu'}
-            display={{ md: 'none' }}
+            aria-label={"Open Menu"}
+            display={{ md: "none" }}
             onClick={isOpen ? onClose : onOpen}
           />
-          <HStack spacing={8} alignItems={'center'}>
-            <Link href="../auth/home"><Box>UTN-FRT</Box></Link>
+          <HStack spacing={8} alignItems={"center"}>
+            <Link href="../auth/home">
+              <Box>UTN-FRT</Box>
+            </Link>
             <HStack
-              as={'nav'}
+              as={"nav"}
               spacing={4}
-              display={{ base: 'none', md: 'flex' }}>
-              {Links.map(({name,path}) => (
-                <NavLink key={path} path={path}>{name}</NavLink>
+              display={{ base: "none", md: "flex" }}
+            >
+              {Links.map(({ name, path,disabled }) => (
+                !disabled ?(
+                <NavLink key={path} path={path} >
+                  {name}
+                </NavLink>
+                ) : (<></>)
               ))}
             </HStack>
           </HStack>
-          <Flex alignItems={'center'}>
+          <Flex alignItems={"center"}>
             {/* <Button
               variant={'solid'}
               colorScheme={'teal'}
@@ -79,47 +104,79 @@ export default function Navbar() {
               Action
             </Button> */}
             <ColorModeSwitcher mx={3}></ColorModeSwitcher>
+            {sessionEmail==undefined?(
             <Button
-            onClick={()=>{console.log('mostrar componente Login')}}
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            color={'white'}
-            bg={'blue.400'}
-            _hover={{
-              bg: 'blue.300',
-            }}>
-            Iniciar Sesión
-          </Button>
-            {/* <Menu>
-              <MenuButton
-                as={Button}
-                rounded={'full'}
-                variant={'link'}
-                cursor={'pointer'}
-                minW={0}>
-                <Avatar
-                  size={'sm'}
-                  src={
-                    'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                  }
-                />
-              </MenuButton>
-              <MenuList>
-                <MenuItem>Link 1</MenuItem>
-                <MenuItem>Link 2</MenuItem>
-                <MenuDivider />
-                <MenuItem>Link 3</MenuItem>
-              </MenuList>
-            </Menu> */}
+              
+              display={{ base: "none", md: "inline-flex" }}
+              fontSize={"sm"}
+              fontWeight={600}
+              color={"white"}
+              bg={"blue.400"}
+              _hover={{
+                bg: "blue.300",
+              }}
+            >
+              <Link href="../auth/login">Iniciar Sesión</Link>
+              
+            </Button>):(
+
+<Menu>
+<MenuButton
+  as={Button}
+  rounded={'full'}
+  variant={'link'}
+  cursor={'pointer'}
+  minW={0}>
+  <Avatar
+    size={'sm'}
+    src={'https://avatars.dicebear.com/api/male/username.svg'}
+  />
+</MenuButton>
+<MenuList alignItems={'center'}>
+  <br />
+  <Center>
+    <Avatar
+      size={'2xl'}
+      src={'https://avatars.dicebear.com/api/male/username.svg'}
+    />
+  </Center>
+  <br />
+  <Center>
+    <p>{sessionEmail}</p>
+  </Center>
+  <br />
+  <MenuDivider />
+  <MenuItem onClick={()=>{logout()}}>Logout</MenuItem>
+</MenuList>
+</Menu>
+
+            //   <Flex alignItems={'center'}>
+            //   <Menu>
+            //     <MenuButton
+            //       as={Button}
+            //       rounded={'full'}
+            //       variant={'link'}
+            //       cursor={'pointer'}
+            //       minW={0}>
+            //       <Box>{sessionEmail}</Box>
+            //     </MenuButton>
+            //     <MenuList>
+            //       <MenuDivider />
+            //       <MenuItem onClick={()=>{logout()}}>Logout</MenuItem>
+            //     </MenuList>
+            //   </Menu>
+            // </Flex>
+            )}
           </Flex>
         </Flex>
 
         {isOpen ? (
-          <Box pb={4} display={{ md: 'none' }}>
-            <Stack as={'nav'} spacing={4}>
-              {Links.map(({name,path}) => (
-                <NavLink key={path} path={path}>{name}</NavLink>
+          <Box pb={4} display={{ md: "none" }}>
+            <Stack as={"nav"} spacing={4}>
+              {Links.map(({ name, path }) => (
+                <NavLink key={path} path={path}>
+                  {name}
+                </NavLink>
               ))}
             </Stack>
           </Box>
