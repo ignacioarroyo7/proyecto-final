@@ -23,10 +23,12 @@ import {
   useColorModeValue,
   FormErrorMessage,
 } from "@chakra-ui/react";
-
+import Swal from "sweetalert2";
+import { Router, useRouter } from "next/router";
+import axios from "axios";
 
 const ValidarDocumento: React.FC = () => {
-  
+  const router = useRouter()
 
   function validateHash(value) {
     let error;
@@ -38,16 +40,31 @@ const ValidarDocumento: React.FC = () => {
     return error;
   }
 
+  const getDocumentFromBlockchain = async (hash)=>{
+   const responseGet = await axios.get('http://localhost:4000/api/documentos/get',{params:{cid:hash}})
+   if(responseGet.status === 200){
+    router.push({pathname:'/apps/ver-documento',query:{IPFS:responseGet.data.urlIPFS,hash:document[0].hash,fechaHora:document[0].fechaHora,emailAlumno:document[0].emailAlumno}})
+  }else{
+    Swal.fire({
+      icon: 'error',
+      title: '¡Lo sentimos!',
+      text: 'Documento inexistente',
+    })
+  }
+  }
+
   return (
     <>
       <Navbar></Navbar>
       <Formik
         initialValues={{ hash: "" }}
         onSubmit={(values, actions) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            actions.setSubmitting(false);
-          }, 1000);
+          getDocumentFromBlockchain(values.hash)
+          actions.setSubmitting(false);
+          // setTimeout(() => {
+          //   alert(JSON.stringify(values, null, 2));
+          //   // actions.setSubmitting(false);
+          // }, 1000);
         }}
       >
         {(props) => (

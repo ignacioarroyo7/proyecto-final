@@ -160,7 +160,7 @@ const GenerarDocumento: React.FC = () => {
       <Navbar></Navbar>
       <Container maxW={"4xl"}>
         <Formik
-          initialValues={{ legajo: "", password: "" }}
+          initialValues={{ legajo: "", password: "",constancia:"" }}
           onSubmit={(values, actions) => {
             getDocumento(values.legajo,Number(values.constancia));
             actions.resetForm()
