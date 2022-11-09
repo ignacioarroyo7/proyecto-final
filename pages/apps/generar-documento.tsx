@@ -27,13 +27,23 @@ import {
   NumberInputStepper,
   FormErrorMessage,
   Container,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import axios from "axios";
 import FormData from 'form-data';
+import Swal from "sweetalert2";
 
 interface IPDF{
   pdfToBase64: string
 }
+
+// const { isOpen, onOpen, onClose } = useDisclosure()
+// const cancelRef = React.useRef()
 
 const GenerarDocumento: React.FC = () => {
   function validateLegajo(value) {
@@ -75,33 +85,54 @@ const GenerarDocumento: React.FC = () => {
   
 
 
-  const getDocumento = async (constancia) => {
+  const getDocumento = async (legajo: String,constancia: Number) => {
     switch (constancia) {
       case 1:
+        try{
         const responseGet = await axios.get(
-          "http://localhost:5000/api/document/constancia"
+          "http://localhost:7000/api/document/constancia"
           , { responseType: 'blob' }
         );
         // const body = {
         //   fileName: "prueba.pdf",
         //   fileContent: await convertToBuffer(responseGet.data),
         // };
-        const pdfData = responseGet.data;
-        const form = new FormData();
-        form.append('pdf',pdfData , {
-        filepath: "prueba.pdf",
-        contentType: 'multipart/form-data',
-        });
-        const responsePost = await axios.post(
-          "http://localhost:4000/api/documentos/validar"
-          ,form
-          ,{headers: {'Content-Type': 'multipart/form-data'}}
-        );
-        // const responsePost = await axios.post(
-        //   "https://7543-2803-9800-9441-4c22-89ab-2aa2-b545-1b29.sa.ngrok.io/api/documentos/validar",
-        //   body, {maxContentLength: Infinity, maxBodyLength: Infinity}
-        // );
-        //console.log(response);
+        try{
+          const pdfData = responseGet.data;
+          const form = new FormData();
+          form.append('pdf',pdfData , {
+          filepath: "prueba.pdf",
+          contentType: 'multipart/form-data',
+          });
+          form.append('legajo',legajo)
+          form.append('constancia',constancias[constancia-1])
+          const responsePost = await axios.post(
+            "http://localhost:4000/api/documentos/validar"
+            ,form
+            ,{headers: {'Content-Type': 'multipart/form-data'}}
+          );
+          if(responsePost.status === 200){
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'El documento fue enviado a tu correo, por favor revisa tu bandeja de entrada',
+              showConfirmButton: false,
+              timer: 2000
+            })
+          }else{
+            Swal.fire({
+              icon: 'error',
+              title: '¡Lo sentimos!',
+              text: 'Ocurrió un error, por favor intente nuevamente',
+            })
+          }
+        }catch (error) {
+          console.log("error al generar documento");
+      }
+      }catch (error) {
+        console.log("error al generar documento get");
+    }
+  
         break;
       case 2:
         axios.get("");
@@ -124,7 +155,8 @@ const GenerarDocumento: React.FC = () => {
         <Formik
           initialValues={{ legajo: "", password: "" }}
           onSubmit={(values, actions) => {
-            getDocumento(1);
+            getDocumento(values.legajo,Number(values.constancia));
+            actions.resetForm()
             console.log("values: ", values);
             actions.setSubmitting(false);
           }}
@@ -207,7 +239,7 @@ const GenerarDocumento: React.FC = () => {
                                 Elija una Constancia..
                               </option>
                               {Object.keys(constancias).map((keyName, i) => (
-                                <option key={i} value={constancias[keyName]}>
+                                <option key={i} value={i+1}>
                                   {constancias[keyName]}
                                 </option>
                               ))}
