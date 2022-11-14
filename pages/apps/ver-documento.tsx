@@ -12,11 +12,11 @@ import {
 } from "formik";
 import {
   Flex,
-  Box,
   FormControl,
   FormLabel,
   Input,
   Stack,
+  VStack,
   Button,
   Heading,
   Text,
@@ -54,32 +54,49 @@ import {
 
 const VerDocumento: React.FC = () => {
     const router = useRouter()
-    const {IPFS,hash,fechaHora,emailAlumno} = router.query
+    const {IPFS,hash,fechaHora,emailAlumno}= router.query
   return (
     <>
       <Navbar></Navbar>
 
-      <Container maxW={'full'} py={12}>
+      <Container maxW={'full'} py={2}>
       <Grid
   h='200px'
   templateRows='repeat(2, 1fr)'
   templateColumns='repeat(3, 1fr)'
-  gap={4}
+  gap={2}
 >
-  <GridItem colSpan={1}>
-  <Heading>UTN-FRT</Heading>
-  <Text fontSize='2xl'>Emisor:</Text>
-  <Text fontSize='lg'>Universidad Tecnologica Nacional</Text>
-    <Text fontSize='2xl'>Fecha de Emisión</Text>
-    <Text fontSize='lg'>{fechaHora}</Text>
-    <Text fontSize='2xl'>Certifica a:</Text>
-    <Text fontSize='lg'>{emailAlumno}</Text>
-    <Text fontSize='2xl'>Hash:</Text>
-    <Text fontSize='lg'>{hash}</Text>
+  <GridItem colSpan={1} pe={4}>
+    <Stack direction={{ base: "column", sm: "row" }}
+                        align={"center"}
+                        justify={"center"}>
+    <Heading>UTN-FRT</Heading>                      
+    </Stack>  
+  <VStack my={12} sx={{alignContent: 'center', justifyContent:'center', textAlign:'center'}}>
+  <Stack my={6}>
+  <Text fontSize='2xl' as='b'>Emisor:</Text>
+  <Text fontSize='lg' as='i'>Universidad Tecnologica Nacional</Text>
+  </Stack>
+  <Stack my={6}>
+  <Text fontSize='2xl' as='b'>Fecha de Emisión</Text>
+    <Text fontSize='lg' as='i'>{fechaHora}</Text>
+  </Stack>
+    <Stack my={6}>
+    <Text fontSize='2xl' as='b'>Certifica a:</Text>
+    <Text fontSize='lg' as='i'>{emailAlumno}</Text>
+    </Stack>
+    <Stack my={6}>
+    <Text fontSize='2xl' as='b'>Hash:</Text>
+    <Text fontSize='lg' as='i'>{hash}</Text>
+    </Stack>
+
+  </VStack>
+  
+    
     </GridItem> 
   <GridItem colSpan={2} >
   <AspectRatio maxW='full' ratio={4 / 3}>
-  <iframe/>
+  <iframe src={String(IPFS)}/>
 </AspectRatio>
   </GridItem>
 </Grid>
