@@ -81,7 +81,7 @@ const GenerarDocumento: React.FC = () => {
   
 
 
-  const getDocumento = async (legajo: String,constancia: Number) => {
+  const getDocumento = async (legajo: string,constancia: number) => {
     switch (constancia) {
       case 1:
         try{
@@ -155,6 +155,8 @@ const GenerarDocumento: React.FC = () => {
     "Constancia de Inicio de Año Lectivo",
     "Estado Académico",
   ];
+  const bg = useColorModeValue("white", "gray.700")
+
   return (
     <>
       <Navbar></Navbar>
@@ -173,7 +175,7 @@ const GenerarDocumento: React.FC = () => {
               minH={"100vh"}
               align={"center"}
               justify={"center"}
-              bg={useColorModeValue("gray.50", "gray.800")}
+              bg={bg}
             >
               <Stack spacing={14} mx={"auto"} maxW={"lg"} py={12} px={6}>
                 <Stack align={"center"}>
@@ -184,7 +186,7 @@ const GenerarDocumento: React.FC = () => {
                 </Stack>
                 <Box
                   rounded={"lg"}
-                  bg={useColorModeValue("white", "gray.700")}
+                  bg={bg}
                   boxShadow={"lg"}
                   p={8}
                 >
